@@ -15,7 +15,6 @@ const AddJeepModal: React.FC<AddJeepModalProps> = ({ onClose }) => {
     driverId: null as number | null,
   });
   const [drivers, setDrivers] = useState<any[]>([]); // Replace `any` with your actual driver type
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Fetch available drivers (user role "driver")
@@ -23,14 +22,13 @@ const AddJeepModal: React.FC<AddJeepModalProps> = ({ onClose }) => {
       const { data, error } = await supabase
         .from("users")
         .select("user_id, name")
-        .eq("role_id", 2); // Assuming 2 is the "driver" role ID in your system
+        .eq("role_id", 2);
 
       if (error) {
         console.error("Error fetching drivers:", error);
       } else if (data) {
         setDrivers(data);
       }
-      setLoading(false);
     };
 
     fetchDrivers();
