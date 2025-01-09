@@ -27,8 +27,8 @@ ChartJS.register(
 
 interface TimeSeriesChartProps {
   data: { timestamp: string; passengers: number }[];
-  timeUnit: "hour" | "day" | "week";
-  onTimeUnitChange: (timeUnit: "hour" | "day" | "week") => void;
+  timeUnit: "day" | "week";
+  onTimeUnitChange: (timeUnit: "day" | "week") => void;
 }
 
 const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
@@ -68,38 +68,39 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
         display: false,
       },
       title: {
-        display: false, // Title removed
+        display: false,
       },
     },
     scales: {
       x: {
-        type: "time" as const, // Explicitly set type to "time"
+        type: "time" as const,
         time: {
           unit: timeUnit,
           displayFormats: {
-            hour: "h a", // Format time as "7 AM", "8 AM", etc.
+            day: "MMM d",
+            week: "'Week' w",
           },
         },
         ticks: {
           autoSkip: true,
           maxTicksLimit: 6,
-          color: "rgb(203, 213, 225)", // Adjust color of tick marks
+          color: "rgb(203, 213, 225)",
         },
         title: {
           display: true,
           text: "Time",
-          color: "rgb(203, 213, 225)", // Adjust color of axis title
+          color: "rgb(203, 213, 225)",
         },
       },
       y: {
         beginAtZero: true,
         ticks: {
-          color: "rgb(203, 213, 225)", // Adjust color of tick marks
+          color: "rgb(203, 213, 225)",
         },
         title: {
           display: true,
           text: "Passengers",
-          color: "rgb(203, 213, 225)", // Adjust color of axis title
+          color: "rgb(203, 213, 225)",
         },
       },
     },
@@ -118,10 +119,9 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
         <select
           id="timeUnit"
           value={timeUnit}
-          onChange={(e) => onTimeUnitChange(e.target.value as "hour" | "day" | "week")}
+          onChange={(e) => onTimeUnitChange(e.target.value as "day" | "week")}
           className="border border-gray-400 bg-gray-400 rounded-md w-25 text-sm"
         >
-          <option value="hour">Hourly</option>
           <option value="day">Daily</option>
           <option value="week">Weekly</option>
         </select>

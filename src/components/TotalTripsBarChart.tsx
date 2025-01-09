@@ -10,6 +10,7 @@ interface TotalTripsData {
   total_trips: number; // Total trips in the week
 }
 
+
 const TotalTripsBarChart: React.FC = () => {
   const [totalTripsData, setTotalTripsData] = useState<TotalTripsData[]>([]);
   const [chartGradient, setChartGradient] = useState<CanvasGradient | null>(null);
@@ -26,24 +27,23 @@ const TotalTripsBarChart: React.FC = () => {
         return;
       }
 
-      // Group trips by week
+      // Always group by week
       const tripsByWeek = data.reduce((acc: Record<string, number>, trip: { start_timestamp: string }) => {
         const date = new Date(trip.start_timestamp);
         const weekStart = new Date(date);
-        weekStart.setDate(date.getDate() - date.getDay()); // Get Sunday of the week
-        const weekKey = weekStart.toISOString().slice(0, 10); // Format: YYYY-MM-DD
+        weekStart.setDate(date.getDate() - date.getDay());
+        const weekKey = `Week ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
 
         acc[weekKey] = (acc[weekKey] || 0) + 1;
         return acc;
       }, {});
 
-      // Transform grouped data into array format
-      const formattedData = Object.entries(tripsByWeek).map(([week, total_trips]) => ({
-        week,
-        total_trips,
-      }));
-
-      setTotalTripsData(formattedData);
+      setTotalTripsData(
+        Object.entries(tripsByWeek).map(([week, total_trips]) => ({
+          week,
+          total_trips,
+        }))
+      );
     };
 
     fetchTotalTrips();
@@ -81,9 +81,9 @@ const TotalTripsBarChart: React.FC = () => {
     plugins: {
       legend: {
         display: true,
-        position: "top",
+        position: 'top' as const,
         labels: {
-          color: "rgb(203, 213, 225)", // Color of the legend text
+          color: "rgb(203, 213, 225)",
         },
       },
     },

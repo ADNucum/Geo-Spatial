@@ -9,6 +9,12 @@ interface DataPoint {
   passengers: number;
 }
 
+interface Location {
+  start_location: {
+    coordinates: [number, number];
+  };
+}
+
 const DataAnalytics: React.FC = () => {
   const [data, setData] = useState<DataPoint[]>([]); // For passenger data
   const [timeUnit, setTimeUnit] = useState<"day" | "week">("day");
@@ -117,7 +123,7 @@ const DataAnalytics: React.FC = () => {
 
         const parsedLocations = data || [];
         const results = await Promise.all(
-          parsedLocations.map(async (location) => {
+          parsedLocations.map(async (location: Location) => {
             const [longitude, latitude] = location.start_location.coordinates;
             const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_ACCESS_TOKEN}&limit=1`;
 
@@ -177,7 +183,7 @@ const DataAnalytics: React.FC = () => {
             </div>
           </div>
           <div className="h-98">
-            <TotalTripsBarChart timeUnit={timeUnit} />
+            <TotalTripsBarChart />
           </div>
 
           {/* Top 5 Pickup Places */}
