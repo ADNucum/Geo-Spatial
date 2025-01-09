@@ -93,7 +93,7 @@ const Login: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full p-3 bg-stone-800 text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 bg-sky-400 text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary"
               disabled={loading}
             >
               {loading ? 'Logging in...' : 'Login'}

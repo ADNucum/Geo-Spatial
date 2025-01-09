@@ -36,8 +36,15 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   timeUnit,
   onTimeUnitChange,
 }) => {
+  // Preprocess timestamps to ISO 8601 format
+  const preprocessData = (data: { timestamp: string; passengers: number }[]) =>
+    data.map((point) => ({
+      ...point,
+      timestamp: new Date(point.timestamp).toISOString(), // Convert to ISO 8601
+    }));
+
   // Filter data to include timestamps only from 7 AM to 7 PM
-  const filteredData = data.filter((point) => {
+  const filteredData = preprocessData(data).filter((point) => {
     const hour = new Date(point.timestamp).getHours();
     return hour >= 7 && hour <= 19; // Only include data from 7 AM to 7 PM
   });
@@ -66,10 +73,9 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
     },
     scales: {
       x: {
-        type: "time",
+        type: "time" as const, // Explicitly set type to "time"
         time: {
           unit: timeUnit,
-          unitStepSize: 1,
           displayFormats: {
             hour: "h a", // Format time as "7 AM", "8 AM", etc.
           },
@@ -77,7 +83,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
         ticks: {
           autoSkip: true,
           maxTicksLimit: 6,
-          color: "rgb(203, 213, 225)", // Adjust color of tick marks (stone-200 equivalent)
+          color: "rgb(203, 213, 225)", // Adjust color of tick marks
         },
         title: {
           display: true,
@@ -88,7 +94,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
       y: {
         beginAtZero: true,
         ticks: {
-          color: "rgb(203, 213, 225)", // Adjust color of tick marks (stone-200 equivalent)
+          color: "rgb(203, 213, 225)", // Adjust color of tick marks
         },
         title: {
           display: true,
@@ -115,6 +121,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
           onChange={(e) => onTimeUnitChange(e.target.value as "hour" | "day" | "week")}
           className="border border-gray-400 bg-gray-400 rounded-md w-25 text-sm"
         >
+          <option value="hour">Hourly</option>
           <option value="day">Daily</option>
           <option value="week">Weekly</option>
         </select>
