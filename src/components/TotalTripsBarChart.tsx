@@ -1,4 +1,5 @@
 //Updated
+
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { supabase } from "@/supabaseClient";
