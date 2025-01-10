@@ -25,6 +25,8 @@ interface Location {
   plate_number: string;
   seats: number;
   status: boolean;
+  driver_name: string;
+  jeep_type: string;
 }
 
 type MapView = 'standard' | 'heatmap' | 'pickupdropoff';
@@ -62,6 +64,8 @@ const Maps: React.FC = () => {
           plate_number: item.plate_number,
           seats: item.seats,
           status: item.status,
+          driver_name: item.driver_name,
+          jeep_type: item.jeep_type,
         }));
 
       updateLocations(formattedLocations);
@@ -116,7 +120,7 @@ const Maps: React.FC = () => {
             value={mapView}
             onValueChange={(value: MapView) => setMapView(value)}
           >
-            <SelectTrigger className="w-[100%] h-[30px] text-stone-100 border-sky-900 bg-sky-500">
+            <SelectTrigger className="w-[100%] h-[30px] text-stone-900 border-sky-900 bg-gray-300">
               <SelectValue placeholder="Select map view" />
             </SelectTrigger>
             <SelectContent>

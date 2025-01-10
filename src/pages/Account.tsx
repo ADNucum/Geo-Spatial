@@ -31,6 +31,11 @@ const Account: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [buttonText, setButtonText] = useState('Save Changes');
   const [activeMenu, setActiveMenu] = useState<'editAccount' | 'changePassword' | 'logout' | 'login'>('editAccount');  // Default to 'editAccount'
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordChangeError, setPasswordChangeError] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -72,9 +77,56 @@ const Account: React.FC = () => {
     }));
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     setPasswordError('');
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordChangeError('');
+    setIsChangingPassword(true);
+
+    try {
+      // First verify current password
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || '',
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        setPasswordChangeError('Current password is incorrect');
+        return;
+      }
+
+      // Verify new password matches confirmation
+      if (newPassword !== confirmPassword) {
+        setPasswordChangeError('New passwords do not match');
+        return;
+      }
+
+      // Update password
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateError) {
+        setPasswordChangeError(updateError.message);
+        return;
+      }
+
+      // Clear form and show success
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      alert('Password updated successfully');
+      
+    } catch (error) {
+      console.error('Error changing password:', error);
+      setPasswordChangeError('Failed to update password');
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -211,7 +263,7 @@ const Account: React.FC = () => {
                   name="password"
                   type="password"
                   value={password}
-                  onChange={handlePasswordChange}
+                  onChange={handlePasswordInput}
                   placeholder="Enter your current password"
                   required
                 />
@@ -227,7 +279,51 @@ const Account: React.FC = () => {
         {activeMenu === 'changePassword' && (
           <div>
             <h2 className="text-2xl font-bold mb-6">Change Password</h2>
-            {/* Change Password Form Logic here */}
+            <form onSubmit={handlePasswordChange} className="space-y-6">
+              <div className="w-1/2">
+                <Label htmlFor="currentPassword">Current Password</Label>
+                <Input
+                  id="currentPassword"
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                  required
+                />
+              </div>
+              <div className="w-1/2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                  required
+                />
+              </div>
+              <div className="w-1/2">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                  required
+                />
+              </div>
+              {passwordChangeError && (
+                <p className="text-red-500 text-sm">{passwordChangeError}</p>
+              )}
+              <Button 
+                type="submit" 
+                disabled={isChangingPassword}
+                className="bg-blue-500 w-1/2"
+              >
+                {isChangingPassword ? 'Updating...' : 'Update Password'}
+              </Button>
+            </form>
           </div>
         )}
       </div>

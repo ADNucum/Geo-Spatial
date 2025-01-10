@@ -45,7 +45,7 @@ const PickUpDropOff: React.FC = () => {
         </div>
 
         {/* Card on the Bottom Left */}
-        <div className="h-10 border-2 border-gray-500 absolute bottom-5 left-5 z-30 text-white bg-gray-600 px-2 pt-1 shadow-lg rounded-md">
+        <div className="h-10 border border-gray-500 absolute top-5 right-9 mr-[21%] z-30 text-stone-800 bg-gray-200 px-2 pt-1 shadow-lg rounded-md">
           <div className="flex space-x-6">
             <div className="flex items-center">
               <p className="mr-2">Pick-Up Spots</p>

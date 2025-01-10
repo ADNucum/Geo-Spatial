@@ -1,6 +1,7 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
+import { supabase } from '../supabaseClient';
 
 interface Location {
   type: string;
@@ -11,6 +12,8 @@ interface Location {
   plate_number: string;
   seats: number;
   status: boolean;
+  driver_name: string;
+  jeep_type: string;
 }
 
 interface MapComponentProps {
@@ -32,7 +35,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ locations }) => {
     // Initialize the map
     map.current = new mapboxgl.Map({
       container: mapContainer.current as HTMLElement,
-      style: 'mapbox://styles/mapbox/dark-v11',
+      style: 'mapbox://styles/mapbox/light-v11',
       center: [123.2000, 13.6050],
       zoom: 13,
       maxBounds: nagaBounds,
@@ -58,11 +61,34 @@ const MapComponent: React.FC<MapComponentProps> = ({ locations }) => {
 
       // Add new markers
       locations
-        .filter(location => location.status) // Only active jeeps
-        .forEach(location => {
+        .filter(location => location.status)
+        .forEach(async location => {
           if (location.coordinates && Array.isArray(location.coordinates)) {
-            const [lng, lat] = location.coordinates;
+            // Fetch driver name from users table
+            const { data: driverData, error: driverError } = await supabase
+              .from('users')
+              .select('name')
+              .eq('user_id', location.driver_id)
+              .single();
 
+            if (driverError) {
+              console.error(`Error fetching driver name for user_id ${location.driver_id}:`, driverError);
+              return;
+            }
+
+            // Fetch jeep details
+            const { data: jeepData, error: jeepError } = await supabase
+              .from('modern_jeeps')
+              .select('mjeep_code')
+              .eq('mjeep_id', location.mjeep_id)
+              .single();
+
+            if (jeepError) {
+              console.error(`Error fetching mjeep_code for mjeep_id ${location.mjeep_id}:`, jeepError);
+              return;
+            }
+
+            const [lng, lat] = location.coordinates;
             const marker = new mapboxgl.Marker()
               .setLngLat([lng, lat])
               .addTo(map.current!);
@@ -70,7 +96,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ locations }) => {
             const popup = new mapboxgl.Popup({ offset: 25 })
               .setHTML(`
                 <div>
-                  <strong>Driver: </strong>${location.mjeep_code}<br />
+                  <strong>Driver: </strong>${driverData?.name || 'Unknown'}<br />
+                  <strong>Type: </strong>${jeepData?.mjeep_code || 'Unknown'}<br />
                   <strong>Plate Number: </strong>${location.plate_number}<br />
                   <strong>Seats: </strong>${location.seats}<br />
                   <strong>Status: </strong>${location.status ? 'Active' : 'Inactive'}

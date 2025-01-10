@@ -165,19 +165,19 @@ const DataAnalytics: React.FC = () => {
             onTimeUnitChange={setTimeUnit}
           />
           <div className="flex space-x-4">
-            <div className="flex-1 bg-gray-500 rounded-lg shadow-md">
-              <h3 className="text-center text-base font-bold bg-sky-700 text-white mb-2 p-2 rounded-t-lg">
+            <div className="flex-1 bg-gray-200 rounded-lg shadow-md border border-gray-500">
+              <h3 className="text-center text-base font-bold bg-cyan-500 text-stone-800 mb-2 p-2 rounded-t-lg">
                 Active Jeeps
               </h3>
-              <p className="text-center text-white text-xl font-semibold pb-5">
+              <p className="text-center text-stone-800 text-xl font-semibold pb-5">
                 {activeJeeps}
               </p>
             </div>
-            <div className="flex-1 bg-gray-600 rounded-lg shadow-md">
-              <h3 className="text-center text-base font-bold bg-sky-900 text-white mb-2 p-2 rounded-t-lg">
+            <div className="flex-1 bg-gray-200 rounded-lg shadow-md border border-gray-500">
+              <h3 className="text-center text-base font-bold bg-sky-500 text-stone-800 mb-2 p-2 rounded-t-lg">
                 Inactive Jeeps
               </h3>
-              <p className="text-center text-white text-xl font-semibold pb-5">
+              <p className="text-center text-stone-800 text-xl font-semibold pb-5">
                 {inactiveJeeps}
               </p>
             </div>
@@ -187,12 +187,12 @@ const DataAnalytics: React.FC = () => {
           </div>
 
           {/* Top 5 Pickup Places */}
-          <div className=" relative bg-gray-600 rounded-lg p-3 text-stone-200">
+          <div className=" relative bg-gray-200 rounded-lg p-3 text-stone-800 border border-gray-500">
   <div className="flex justify-between items-center mb-2">
     <h3 className="text-sm font-bold">Top 5 Pickup Places</h3>
     <button
       onClick={() => setIsExpanded(!isExpanded)}
-      className="text-stone-200 hover:text-stone-100"
+      className="text-stone-700 hover:text-stone-900"
     >
       {isExpanded ? (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -207,12 +207,12 @@ const DataAnalytics: React.FC = () => {
   </div>
   {isExpanded && (
     <ul
-      className="absolute top-[-35px] right-full mr-2 w-[300%] bg-gray-700 rounded-lg shadow-lg p-2 flex space-x-2 text-xs z-50"
+      className="absolute top-[-35px] right-full mr-2 w-[300%] bg-gray-500 rounded-lg shadow-lg p-2 flex space-x-2 text-xs z-50"
     >
       {sortedPlaces.slice(0, 5).map(([place], index) => (
         <li
           key={index}
-          className="bg-gray-800 text-stone-200 rounded-md px-2 py-1 hover:bg-gray-600 flex-1 text-center"
+          className="bg-gray-200 text-stone-900 rounded-md px-2 py-1 hover:bg-gray-400 flex-1 text-center"
         >
           {place || "Fetching..."}
         </li>

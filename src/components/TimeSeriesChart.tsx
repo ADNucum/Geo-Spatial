@@ -84,43 +84,43 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
         ticks: {
           autoSkip: true,
           maxTicksLimit: 6,
-          color: "rgb(203, 213, 225)",
+          color: "rgb(48, 47, 44)",
         },
         title: {
           display: true,
           text: "Time",
-          color: "rgb(203, 213, 225)",
+          color: "rgb(48, 47, 44)",
         },
       },
       y: {
         beginAtZero: true,
         ticks: {
-          color: "rgb(203, 213, 225)",
+          color: "rgb(48, 47, 44)",
         },
         title: {
           display: true,
           text: "Passengers",
-          color: "rgb(203, 213, 225)",
+          color: "rgb(48, 47, 44)",
         },
       },
     },
   };
 
   return (
-    <div className="p-4 border border-gray-500 rounded-lg shadow-lg bg-gray-700">
-      <h2 className="text-center text-md font-semibold text-gray-200 mb-4">
+    <div className="p-4 border border-gray-500 rounded-lg shadow-lg bg-gray-200">
+      <h2 className="text-center text-md font-semibold text-gray-800 mb-4">
         Passenger Volume Trends
       </h2>
       {/* Time Unit Selector */}
       <div className="flex justify-center mb-6">
-        <label htmlFor="timeUnit" className="text-stone-200 font-medium mr-2">
+        <label htmlFor="timeUnit" className="text-stone-600 font-medium mr-2">
           Select Time Unit
         </label>
         <select
           id="timeUnit"
           value={timeUnit}
           onChange={(e) => onTimeUnitChange(e.target.value as "day" | "week")}
-          className="border border-gray-400 bg-gray-400 rounded-md w-25 text-sm"
+          className="border border-gray-400 bg-gray-200 rounded-md w-25 text-sm"
         >
           <option value="day">Daily</option>
           <option value="week">Weekly</option>

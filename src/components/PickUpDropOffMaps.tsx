@@ -28,7 +28,7 @@ const PickUpDropOffMaps: React.FC<PickUpDropOffMapsProps> = ({ geoJsonData }) =>
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current as HTMLElement,
-      style: 'mapbox://styles/mapbox/dark-v11',
+      style: 'mapbox://styles/mapbox/light-v11',
       center: [123.2000, 13.6050],
       zoom: 13,
       maxBounds: nagaBounds,

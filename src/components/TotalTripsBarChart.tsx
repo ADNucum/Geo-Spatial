@@ -85,7 +85,7 @@ const TotalTripsBarChart: React.FC = () => {
         display: true,
         position: 'top',
         labels: {
-          color: "rgb(203, 213, 225)",
+          color: "rgb(48, 47, 44)",
         },
       },
     },
@@ -94,20 +94,20 @@ const TotalTripsBarChart: React.FC = () => {
         title: {
           display: true,
           text: "Weeks (Start Date)",
-          color: "rgb(203, 213, 225)", // Color of the x-axis title
+          color: "rgb(48, 47, 44)", // Color of the x-axis title
         },
         ticks: {
-          color: "rgb(203, 213, 225)", // Color of the x-axis ticks
+          color: "rgb(48, 47, 44)", // Color of the x-axis ticks
         },
       },
       y: {
         title: {
           display: true,
           text: "Number of Trips",
-          color: "rgb(203, 213, 225)", // Color of the y-axis title
+          color: "rgb(48, 47, 44)", // Color of the y-axis title
         },
         ticks: {
-          color: "rgb(203, 213, 225)", // Color of the y-axis ticks
+          color: "rgb(48, 47, 44)", // Color of the y-axis ticks
         },
         beginAtZero: true,
       },
@@ -115,8 +115,8 @@ const TotalTripsBarChart: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-700 shadow-md rounded-lg p-1 border border-gray-500">
-      <h3 className="text-center text-lg font-semibold mb-4 text-stone-200">Total Trips Per Week</h3>
+    <div className="bg-gray-200 shadow-md rounded-lg p-1 border border-gray-500">
+      <h3 className="text-center text-lg font-semibold mb-4 text-stone-700">Total Trips Per Week</h3>
       <Bar data={barChartData} options={options} />
     </div>
   );
