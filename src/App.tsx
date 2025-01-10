@@ -13,6 +13,7 @@ import Heatmap from './pages/Heatmap';
 import DataAnalytics from './pages/DataAnalytics';
 import PickUpDropOff from './pages/PickUpDropOff';
 import Login from './pages/Login';
+import AdminCreation from './pages/AdminCreation';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // Null until we check auth status
@@ -53,6 +54,7 @@ const App: React.FC = () => {
         <Route path="/heatmap" element={isAuthenticated ? <Heatmap /> : <Navigate to="/" />} />
         <Route path="/data-analytics" element={isAuthenticated ? <DataAnalytics /> : <Navigate to="/" />} />
         <Route path="/pickup-dropoff" element={isAuthenticated ? <PickUpDropOff /> : <Navigate to="/" />} />
+        <Route path="/admin-creation" element={<AdminCreation />} />
       </Routes>
     </Router>
   );

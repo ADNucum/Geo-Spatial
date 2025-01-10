@@ -15,32 +15,46 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      // Authenticate the user
-      const { error: authError, data } = await supabase.auth.signInWithPassword({
+      console.log('Checking user role for email:', email);
+      
+      // First check if user has admin role
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('role_id, email')
+        .eq('email', email)
+        .single();
+
+      console.log('User role check result:', { user, userError });
+
+      if (userError) {
+        console.error('Error checking user role:', userError);
+        setError('Error verifying user permissions');
+        setLoading(false);
+        return;
+      }
+
+      if (!user || user.role_id !== 3) {
+        console.warn('Access denied - Role ID:', user?.role_id);
+        setError('Access denied. Admin privileges required.');
+        setLoading(false);
+        return;
+      }
+
+      // Then attempt authentication
+      const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (authError) {
+        console.error('Auth error:', authError);
         setError(authError.message);
-      } else {
-        console.log('Login successful:', data);
-
-        // Optional: Fetch user details from `users` table
-        const { data: user, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('email', email)
-          .single();
-
-        if (userError) {
-          setError('Failed to fetch user details.');
-        } else {
-          console.log('User details:', user);
-          // Redirect to /home
-          navigate('/Maps');
-        }
+        return;
       }
+
+      console.log('Login successful for admin user:', user);
+      navigate('/Maps');
+
     } catch (err) {
       console.error('Unexpected error:', err);
       setError('An unexpected error occurred.');
