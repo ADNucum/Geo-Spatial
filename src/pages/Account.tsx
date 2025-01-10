@@ -27,10 +27,7 @@ const Account: React.FC = () => {
     email: '',
   });
   const [password, setPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [passwordChangeError, setPasswordChangeError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [buttonText, setButtonText] = useState('Save Changes');
   const [activeMenu, setActiveMenu] = useState<'editAccount' | 'changePassword' | 'logout' | 'login'>('editAccount');  // Default to 'editAccount'
@@ -80,16 +77,6 @@ const Account: React.FC = () => {
     setPasswordError('');
   };
 
-  const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewPassword(e.target.value);
-    setPasswordChangeError('');
-  };
-
-  const handleConfirmNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmNewPassword(e.target.value);
-    setPasswordChangeError('');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -129,61 +116,15 @@ const Account: React.FC = () => {
     }
   };
 
-  const handlePasswordChangeSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setButtonText('Changing password...');
-
-    if (newPassword !== confirmNewPassword) {
-      setPasswordChangeError('Passwords do not match.');
-      setIsSubmitting(false);
-      setButtonText('Save Changes');
-      return;
-    }
-
-    try {
-      const { data: userSession, error: sessionError } = await supabase.auth.getUser();
-      if (sessionError) throw sessionError;
-
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: userSession?.user.email || '',
-        password: password,
-      });
-
-      if (signInError) {
-        setPasswordChangeError('Incorrect current password.');
-        setIsSubmitting(false);
-        setButtonText('Save Changes');
-        return;
-      }
-
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) {
-        setPasswordChangeError('Error changing password.');
-        setIsSubmitting(false);
-        setButtonText('Save Changes');
-        return;
-      }
-
-      alert('Password changed successfully');
-      setPassword('');
-      setNewPassword('');
-      setConfirmNewPassword('');
-    } catch (error) {
-      console.error('Error changing password:', error);
-      setPasswordChangeError('Error changing password.');
-      setIsSubmitting(false);
-      setButtonText('Save Changes');
-    }
-  };
-
   const handleLogout = async () => {
+    // Sign out from Supabase
     await supabase.auth.signOut();
-    // Redirect to login or home after logout
-    window.location.href = '/login';
+    
+    // Clear any local session or authentication state
+    localStorage.removeItem('access_token');
+
+    // Now, we redirect the user to the login page as a full-page load
+    window.location.href = '/login'; // This triggers a full-page load to the login page
   };
 
   return (
@@ -205,7 +146,7 @@ const Account: React.FC = () => {
         >
           Change Password
         </Button>
-        {/* Logout Button as a button */}
+        {/* Logout Button */}
         <Button
           onClick={handleLogout}
           className="w-full text-center mt-[120%] ml-5 bg-stone-800"
@@ -286,52 +227,7 @@ const Account: React.FC = () => {
         {activeMenu === 'changePassword' && (
           <div>
             <h2 className="text-2xl font-bold mb-6">Change Password</h2>
-            <form onSubmit={handlePasswordChangeSubmit} className="space-y-6">
-              <div className="w-1/2">
-                <Label htmlFor="currentPassword">Current Password</Label>
-                <Input
-                  id="currentPassword"
-                  type="password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  placeholder="Enter your current password"
-                  required
-                />
-                {passwordChangeError && <p className="text-red-500 text-sm">{passwordChangeError}</p>}
-              </div>
-              <div className="w-1/2">
-                <Label htmlFor="newPassword">New Password</Label>
-                <Input
-                  id="newPassword"
-                  type="password"
-                  value={newPassword}
-                  onChange={handleNewPasswordChange}
-                  placeholder="Enter your new password"
-                  required
-                />
-              </div>
-              <div className="w-1/2">
-                <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
-                <Input
-                  id="confirmNewPassword"
-                  type="password"
-                  value={confirmNewPassword}
-                  onChange={handleConfirmNewPasswordChange}
-                  placeholder="Confirm your new password"
-                  required
-                />
-              </div>
-              <Button type="submit" disabled={isSubmitting} className="bg-blue-500 w-1/2">
-                {buttonText}
-              </Button>
-            </form>
-          </div>
-        )}
-
-        {activeMenu === 'logout' && (
-          <div>
-            <h2 className="text-2xl font-bold mb-6">Are you sure you want to logout?</h2>
-            <Button onClick={handleLogout} className="w-1/3">Logout</Button>
+            {/* Change Password Form Logic here */}
           </div>
         )}
       </div>
