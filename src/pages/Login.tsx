@@ -14,17 +14,13 @@ const Login: React.FC = () => {
     setError('');
     setLoading(true);
 
-    try {
-      console.log('Checking user role for email:', email);
-      
+    try {     
       // First check if user has admin role
       const { data: user, error: userError } = await supabase
         .from('users')
         .select('role_id, email')
         .eq('email', email)
         .single();
-
-      console.log('User role check result:', { user, userError });
 
       if (userError) {
         console.error('Error checking user role:', userError);
@@ -51,8 +47,7 @@ const Login: React.FC = () => {
         setError(authError.message);
         return;
       }
-
-      console.log('Login successful for admin user:', user);
+      
       navigate('/Maps');
 
     } catch (err) {

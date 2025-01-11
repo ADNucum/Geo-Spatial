@@ -15,6 +15,17 @@ interface Driver {
   driver_id: string;
 }
 
+interface JeepResponse {
+  mjeep_code: string;
+  plate_number: string;
+  seats: number;
+  status: boolean;
+  driver_id: string;
+  users: {
+    name: string;
+  } | null;
+}
+
 const Drivers: React.FC = () => {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [availableDrivers, setAvailableDrivers] = useState<{ user_id: string; name: string }[]>([]);
@@ -76,27 +87,32 @@ const Drivers: React.FC = () => {
         seats,
         status,
         driver_id,
-      }]);
+      }])
+      .select(`
+        mjeep_code,
+        plate_number,
+        seats,
+        status,
+        driver_id,
+        users:driver_id(name)
+      `)
+      .single() as { data: JeepResponse | null, error: any };
 
-    if (error) {
+    if (error || !data) {
       console.error("Error adding jeep:", error);
     } else {
-      console.log("Jeep added successfully:", data);
+      // Add the new jeep to the state with proper driver name
+      const newJeep = {
+        mjeep_code: data.mjeep_code,
+        plate_number: data.plate_number,
+        seats: data.seats,
+        status: data.status,
+        driver_id: data.driver_id,
+        driver_name: data.users?.name || "No Driver"
+      };
       
-      setDrivers(prevDrivers =>
-        prevDrivers.map(driver =>
-          driver.mjeep_code === mjeep_code
-            ? {
-                ...driver,
-                plate_number,
-                seats,
-                status,
-                driver_id,
-                driver_name: availableDrivers.find(d => d.user_id === driver_id)?.name || "No Driver",
-              }
-            : driver
-        )
-      );
+      setDrivers(prevDrivers => [...prevDrivers, newJeep]);
+      setIsModalOpen(false);
     }
   };
 
@@ -135,11 +151,11 @@ const Drivers: React.FC = () => {
   };
 
   const handleSubmitEdit = async (formData: Driver) => {
-    const { mjeep_code, plate_number, seats, status, driver_id } = formData;
+    const { mjeep_code, plate_number, seats, driver_id } = formData;
 
     const { error } = await supabase
       .from("modern_jeeps")
-      .update({ plate_number, seats, status, driver_id })
+      .update({ plate_number, seats, driver_id })
       .match({ mjeep_code });
 
     if (error) {
@@ -148,7 +164,7 @@ const Drivers: React.FC = () => {
       setDrivers(prevDrivers =>
         prevDrivers.map(driver =>
           driver.mjeep_code === mjeep_code
-            ? { ...driver, plate_number, seats, status, driver_id }
+            ? { ...driver, plate_number, seats, driver_id }
             : driver
         )
       );
@@ -269,17 +285,6 @@ const Drivers: React.FC = () => {
                   onChange={(e) => setEditDriver({ ...editDriver, seats: Number(e.target.value) })}
                   className="border p-2 w-full"
                 />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="status" className="block text-sm font-medium">Status</label>
-                <input
-                  type="checkbox"
-                  id="status"
-                  checked={editDriver.status}
-                  onChange={(e) => setEditDriver({ ...editDriver, status: e.target.checked })}
-                  className="mr-2"
-                />
-                <span>{editDriver.status ? "Active" : "Inactive"}</span>
               </div>
               <div className="mb-4">
                 <label htmlFor="driver_id" className="block text-sm font-medium">Driver</label>

@@ -26,11 +26,9 @@ const Account: React.FC = () => {
     username: '',
     email: '',
   });
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [buttonText, setButtonText] = useState('Save Changes');
-  const [activeMenu, setActiveMenu] = useState<'editAccount' | 'changePassword' | 'logout' | 'login'>('editAccount');  // Default to 'editAccount'
+  const [activeMenu, setActiveMenu] = useState<'editAccount' | 'changePassword' | 'logout' | 'login'>('editAccount');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -75,11 +73,6 @@ const Account: React.FC = () => {
       ...prevData,
       [name]: value,
     }));
-  };
-
-  const handlePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-    setPasswordError('');
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -136,21 +129,6 @@ const Account: React.FC = () => {
 
     try {
       if (user) {
-        const { data: userSession, error: sessionError } = await supabase.auth.getUser();
-        if (sessionError) throw sessionError;
-
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: userSession?.user.email || '',
-          password: password,
-        });
-
-        if (signInError) {
-          setPasswordError('Incorrect password.');
-          setIsSubmitting(false);
-          setButtonText('Save Changes');
-          return;
-        }
-
         const { name, username, email } = formData;
         const { error } = await supabase
           .from('users')
@@ -160,9 +138,11 @@ const Account: React.FC = () => {
         if (error) throw error;
 
         alert('Account details updated successfully');
+        setButtonText('Save Changes');
       }
     } catch (error) {
       console.error('Error updating account:', error);
+    } finally {
       setIsSubmitting(false);
       setButtonText('Save Changes');
     }
@@ -255,19 +235,6 @@ const Account: React.FC = () => {
                   onChange={handleInputChange}
                   placeholder="Enter your email"
                 />
-              </div>
-              <div className="w-1/2">
-                <Label htmlFor="password">Current Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={password}
-                  onChange={handlePasswordInput}
-                  placeholder="Enter your current password"
-                  required
-                />
-                {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
               </div>
               <Button type="submit" disabled={isSubmitting} className="bg-blue-500 w-1/2">
                 {buttonText}
