@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '../supabaseClient'; // Adjust path as needed
+import { supabase } from '../supabaseClient'; 
 import { useNavigate } from 'react-router-dom';
 
 const AdminCreation: React.FC = () => {
@@ -24,7 +24,6 @@ const AdminCreation: React.FC = () => {
     setLoading(true);
   
     try {
-      // Step 1: Sign up the user with Supabase Auth
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -38,15 +37,14 @@ const AdminCreation: React.FC = () => {
   
       const authUserId = data?.user?.id;
   
-      // Step 2: Insert the user into the `users` table with role_id = 3
       const { error: insertError } = await supabase.from('users').insert([
         {
           name,
           username,
           email,
-          password, // Store password securely in production
-          role_id: 3, // Set role_id to 3 instead of 1 for the logged-in user
-          auth_user_id: authUserId, // Use the auth user ID from Supabase
+          password, 
+          role_id: 3, 
+          auth_user_id: authUserId,
         },
       ]);
   
@@ -61,7 +59,7 @@ const AdminCreation: React.FC = () => {
       setUsername('');
       setEmail('');
       setPassword('');
-      navigate('/'); // Redirect to login page
+      navigate('/');
     } catch (error) {
       console.error('Unexpected error during signup:', error);
       alert('An unexpected error occurred. Please try again.');

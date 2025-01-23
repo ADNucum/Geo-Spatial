@@ -20,18 +20,16 @@ const AddJeepModal: React.FC<AddJeepModalProps> = ({ isOpen, onClose, onSubmit }
 
   useEffect(() => {
     const fetchAvailableDrivers = async () => {
-      // Fetch all drivers
       const { data: allDrivers, error: driversError } = await supabase
         .from("users")
         .select("user_id, name")
-        .eq("role_id", 2); // Assuming role_id 2 is for drivers
+        .eq("role_id", 2); 
 
       if (driversError) {
         console.error("Error fetching drivers:", driversError);
         return;
       }
 
-      // Fetch drivers who already have a jeep assigned
       const { data: jeepsData, error: jeepsError } = await supabase
         .from("modern_jeeps")
         .select("driver_id");
@@ -41,10 +39,8 @@ const AddJeepModal: React.FC<AddJeepModalProps> = ({ isOpen, onClose, onSubmit }
         return;
       }
 
-      // Get a list of driver IDs that are already assigned to a jeep
       const assignedDriverIds = jeepsData.map((jeep: any) => jeep.driver_id);
 
-      // Filter out drivers who are already assigned to a jeep
       const availableDrivers = allDrivers.filter(
         (driver) => !assignedDriverIds.includes(driver.user_id)
       );
@@ -67,8 +63,8 @@ const AddJeepModal: React.FC<AddJeepModalProps> = ({ isOpen, onClose, onSubmit }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData); // Pass the form data to the parent component
-    onClose(); // Close the modal after submitting
+    onSubmit(formData); 
+    onClose();
   };
 
   return (
@@ -77,7 +73,6 @@ const AddJeepModal: React.FC<AddJeepModalProps> = ({ isOpen, onClose, onSubmit }
       <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-md p-6 w-full max-w-xl overflow-auto">
         <DialogTitle>Add New Jeep</DialogTitle>
         <form onSubmit={handleSubmit} className="space-y-6 w-full">
-          {/* Mjeep Code */}
           <div>
             <label htmlFor="mjeep_code" className="block text-sm font-semibold">Jeep Code</label>
             <input
@@ -91,7 +86,6 @@ const AddJeepModal: React.FC<AddJeepModalProps> = ({ isOpen, onClose, onSubmit }
             />
           </div>
 
-          {/* Plate Number */}
           <div>
             <label htmlFor="plate_number" className="block text-sm font-semibold">Plate Number</label>
             <input
@@ -105,7 +99,6 @@ const AddJeepModal: React.FC<AddJeepModalProps> = ({ isOpen, onClose, onSubmit }
             />
           </div>
 
-          {/* Seats and Driver */}
           <div className="flex space-x-4">
             <div className="w-1/2">
               <label htmlFor="seats" className="block text-sm font-semibold">Seats</label>

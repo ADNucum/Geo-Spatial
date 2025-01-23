@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
-// Add this within your modal form
 interface AddJeepModalProps {
   onClose: () => void;
 }
@@ -14,10 +13,9 @@ const AddJeepModal: React.FC<AddJeepModalProps> = ({ onClose }) => {
     type: "",
     driverId: null as number | null,
   });
-  const [drivers, setDrivers] = useState<any[]>([]); // Replace `any` with your actual driver type
+  const [drivers, setDrivers] = useState<any[]>([]); 
 
   useEffect(() => {
-    // Fetch available drivers (user role "driver")
     const fetchDrivers = async () => {
       const { data, error } = await supabase
         .from("users")
@@ -52,7 +50,7 @@ const AddJeepModal: React.FC<AddJeepModalProps> = ({ onClose }) => {
 
     if (!error) {
       alert("Jeep added successfully");
-      onClose(); // Close modal after success
+      onClose(); 
     } else {
       console.error("Error adding jeep:", error);
     }

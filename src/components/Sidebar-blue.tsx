@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface SidebarProps {
   items: React.ReactNode[];
@@ -6,15 +6,13 @@ interface SidebarProps {
 
 const SidebarBlue: React.FC<SidebarProps> = ({ items }) => {
   return (
-    <div className="w-[50px] h-[2c00px] bg-gradient-to-b from-blue-400 to-blue-700 rounded-[20px] shadow-[0px_0px_15px_0px_rgba(0,0,0,0.20)] backdrop-blur-[5px] flex flex-col justify-center items-center">
+    <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-10 flex flex-col items-center space-y-4">
       {items.map((item, index) => (
         <div
           key={index}
-          className="self-stretch h-[50px] p-[3px] rounded-[8px] justify-center items-center gap-[10px] flex transition-colors duration-300 hover:bg-blue-300"
+          className="w-[50px] h-[50px] rounded-full bg-gradient-to-b from-teal-400 to-teal-600 shadow-[0px_0px_15px_0px_rgba(0,0,0,0.20)] flex justify-center items-center transition-transform duration-300 hover:scale-110 hover:shadow-md"
         >
-          <div className="w-[20px] h-[20px] flex justify-center items-center overflow-hidden">
-            {item}
-          </div>
+          {item}
         </div>
       ))}
     </div>

@@ -27,8 +27,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ locations }) => {
 
   useEffect(() => {
     const nagaBounds: [number, number, number, number] = [
-      123.0869253479996, 13.516429633633399, // Southwest corner
-      123.39814271303992, 13.714242556168118, // Northeast corner
+      123.0869253479996, 13.516429633633399, 
+      123.39814271303992, 13.714242556168118,
     ];
 
     map.current = new mapboxgl.Map({
@@ -42,8 +42,43 @@ const MapComponent: React.FC<MapComponentProps> = ({ locations }) => {
     map.current.on('load', () => {
       const navControl = new mapboxgl.NavigationControl({
         visualizePitch: true,
+        showCompass: true
       });
       map.current!.addControl(navControl, 'top-left');
+
+      const style = document.createElement('style');
+      style.textContent = `
+        .mapboxgl-ctrl-group {
+          display: flex !important;
+          flex-direction: row !important;
+          background: none !important;
+          box-shadow: none !important;
+        }
+        .mapboxgl-ctrl-group button {
+          width: 40px !important;
+          height: 40px !important;
+          margin: 5px !important;
+          background-color: #f9f9f9 !important;
+          border: 1px solid #36b5b3 !important;
+          border-radius: 4px !important;
+          transition: all 0.2s ease !important;
+        }
+        .mapboxgl-ctrl-group button:hover {
+          background-color: #e6e6e6 !important;
+          transform: scale(1.1) !important;
+        }
+        .mapboxgl-ctrl-group button:not(:disabled):hover {
+          background-color: #e6e6e6 !important;
+        }
+        .mapboxgl-ctrl-compass {
+          width: 40px !important;
+          height: 40px !important;
+        }
+        .mapboxgl-ctrl-icon {
+          background-position: center !important;
+        }
+      `;
+      document.head.appendChild(style);
     });
 
     return () => {
@@ -53,22 +88,19 @@ const MapComponent: React.FC<MapComponentProps> = ({ locations }) => {
 
   useEffect(() => {
     if (map.current && locations.length > 0) {
-      // Remove old markers
       const existingMarkers = document.querySelectorAll('.custom-marker');
       existingMarkers.forEach(marker => marker.remove());
 
-      // Add new markers
       locations
         .filter(location => location.status)
         .forEach(async location => {
           if (location.coordinates && Array.isArray(location.coordinates)) {
             const [lng, lat] = location.coordinates;
 
-            // Create a custom HTML marker
             const markerElement = document.createElement('div');
             markerElement.className = 'custom-marker';
-            markerElement.style.backgroundImage = `url('/busMarker.png')`; // Replace with your image path
-            markerElement.style.width = '40px'; // Set custom size
+            markerElement.style.backgroundImage = `url('/busMarker.png')`; 
+            markerElement.style.width = '40px'; 
             markerElement.style.height = '40px';
             markerElement.style.backgroundSize = 'cover';
             markerElement.style.borderRadius = '50%';

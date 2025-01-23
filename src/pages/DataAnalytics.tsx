@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import TimeSeriesChart from "@/components/TimeSeriesChart";
-import { supabase } from "@/supabaseClient"; // Your existing supabase client setup
-import TotalTripsBarChart from "../components/TotalTripsBarChart"; // Importing the new bar chart component
+import { supabase } from "@/supabaseClient";
+import TotalTripsBarChart from "../components/TotalTripsBarChart";
 
 interface DataPoint {
-  timestamp: string; // Ensure this is in ISO date format
+  timestamp: string;
   passengers: number;
 }
 
@@ -16,16 +16,15 @@ interface Location {
 }
 
 const DataAnalytics: React.FC = () => {
-  const [data, setData] = useState<DataPoint[]>([]); // For passenger data
+  const [data, setData] = useState<DataPoint[]>([]);
   const [timeUnit, setTimeUnit] = useState<"day" | "week">("day");
   const [activeJeeps, setActiveJeeps] = useState<number>(0);
   const [inactiveJeeps, setInactiveJeeps] = useState<number>(0);
-  const [placeCounts, setPlaceCounts] = useState<Map<string, number>>(new Map()); // To store counts of each place
-  const [isExpanded, setIsExpanded] = useState<boolean>(false); // Toggle visibility of places list
+  const [placeCounts, setPlaceCounts] = useState<Map<string, number>>(new Map());
+  const [isExpanded, setIsExpanded] = useState<boolean>(true); 
 
   const MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiYWRudWN1bSIsImEiOiJjbTU0d2d3M3kwbmdkMmpzZDlmcDV6c2tpIn0.xtX4hjSL9WBL475tR5ICFA";
 
-  // Fetching time series data for passengers
   useEffect(() => {
     const fetchPassengerData = async () => {
       const { data: result, error } = await supabase.rpc("get_passenger_data", {
@@ -48,7 +47,6 @@ const DataAnalytics: React.FC = () => {
     fetchPassengerData();
   }, [timeUnit]);
 
-  // Fetch jeepney counts and real-time updates
   useEffect(() => {
     const fetchJeepsCount = async () => {
       try {
@@ -101,7 +99,7 @@ const DataAnalytics: React.FC = () => {
         { event: "UPDATE", schema: "public", table: "modern_jeeps" },
         (payload) => {
           if (payload.new.status !== payload.old.status) {
-            fetchJeepsCount(); // Refresh counts on status change
+            fetchJeepsCount();
           }
         }
       )
@@ -112,7 +110,6 @@ const DataAnalytics: React.FC = () => {
     };
   }, []);
 
-  // Fetching Top 5 Most Booked Places
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -156,25 +153,21 @@ const DataAnalytics: React.FC = () => {
     .slice(0, 5);
 
   return (
-    <div className="relative flex justify-end items-center min-h-screen">
-      <Card className="w-full max-w-xs p-2 bg-transparent border-0 z-10">
+    <div className="relative flex justify-end items-center min-h-screen ">
+      <Card className="w-full max-w-xs p-2 pl-9  bg-transparent border-0 z-10">
         <CardContent className="p-2 space-y-1">
-          <TimeSeriesChart
-            data={data}
-            timeUnit={timeUnit}
-            onTimeUnitChange={setTimeUnit}
-          />
-          <div className="flex space-x-4">
-            <div className="flex-1 bg-gray-200 rounded-lg shadow-md border border-gray-500">
-              <h3 className="text-center text-base font-bold bg-cyan-500 text-stone-800 mb-2 p-2 rounded-t-lg">
+
+          <div className="flex space-x-1">
+            <div className="flex-1 bg-gray-50 rounded-lg shadow-md border border-green-500">
+              <h3 className="text-center text-base font-bold bg-gradient-to-r from-green-500 to-green-200 text-stone-800 mb-2 p-2 rounded-t-lg">
                 Active Jeeps
               </h3>
               <p className="text-center text-stone-800 text-xl font-semibold pb-5">
                 {activeJeeps}
               </p>
             </div>
-            <div className="flex-1 bg-gray-200 rounded-lg shadow-md border border-gray-500">
-              <h3 className="text-center text-base font-bold bg-sky-500 text-stone-800 mb-2 p-2 rounded-t-lg">
+            <div className="flex-1 bg-gray-50 rounded-lg shadow-md border border-red-500">
+              <h3 className="text-center text-base font-bold bg-gradient-to-r from-red-500 to-red-200 text-stone-800 mb-2 p-2 rounded-t-lg">
                 Inactive Jeeps
               </h3>
               <p className="text-center text-stone-800 text-xl font-semibold pb-5">
@@ -185,42 +178,46 @@ const DataAnalytics: React.FC = () => {
           <div className="h-98">
             <TotalTripsBarChart />
           </div>
+          <TimeSeriesChart
+            data={data}
+            timeUnit={timeUnit}
+            onTimeUnitChange={setTimeUnit}
+          />
 
           {/* Top 5 Pickup Places */}
-          <div className=" relative bg-gray-200 rounded-lg p-3 text-stone-800 border border-gray-500">
-  <div className="flex justify-between items-center mb-2">
-    <h3 className="text-sm font-bold">Top 5 Pickup Places</h3>
-    <button
-      onClick={() => setIsExpanded(!isExpanded)}
-      className="text-stone-700 hover:text-stone-900"
-    >
-      {isExpanded ? (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.5 12h-15" />
-        </svg>
-      ) : (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19.5v-15m7.5 7.5h-15" />
-        </svg>
-      )}
-    </button>
-  </div>
-  {isExpanded && (
-    <ul
-      className="absolute top-[-35px] right-full mr-2 w-[300%] bg-gray-500 rounded-lg shadow-lg p-2 flex space-x-2 text-xs z-50"
-    >
-      {sortedPlaces.slice(0, 5).map(([place], index) => (
-        <li
-          key={index}
-          className="bg-gray-200 text-stone-900 rounded-md px-2 py-1 hover:bg-gray-400 flex-1 text-center"
-        >
-          {place || "Fetching..."}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
+          <div className="relative bg-gradient-to-r from-teal-500 to-teal-100 rounded-lg p-3 text-stone-800 border border-teal-500">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-sm font-bold">Top 5 Pickup Places</h3>
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-stone-700 hover:text-stone-900"
+              >
+                {isExpanded ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.5 12h-15" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19.5v-15m7.5 7.5h-15" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            {isExpanded && (
+              <ul
+                className="absolute top-[-22px] right-full mr-0 w-[350%] h-[160%] rounded-lg p-2 flex space-x-2 text-xs z-50"
+              >
+                {sortedPlaces.slice(0, 5).map(([place], index) => (
+                  <li
+                    key={index}
+                    className="bg-stone-50 border border-teal-500 text-stone-800 rounded-md px-2 py-1 pt-2 hover:bg-gray-400 flex-1 text-center"
+                  >
+                    {place || "Fetching..."}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

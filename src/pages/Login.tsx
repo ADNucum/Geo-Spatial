@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { supabase } from '@/supabaseClient'; // Adjust the path as needed
+import { useNavigate } from 'react-router-dom'; 
+import { supabase } from '@/supabaseClient'; 
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Initialize navigate
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,36 +17,43 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {     
-      // First check if user has admin role
       const { data: user, error: userError } = await supabase
         .from('users')
         .select('role_id, email')
         .eq('email', email)
         .single();
 
+      if (userError?.code === 'PGRST116') { 
+        setError('Email not found. Please check your email address.');
+        setLoading(false);
+        return;
+      }
+
       if (userError) {
-        console.error('Error checking user role:', userError);
-        setError('Error verifying user permissions');
+        console.error('Error checking user:', userError);
+        setError('Error verifying user. Please try again.');
         setLoading(false);
         return;
       }
 
       if (!user || user.role_id !== 3) {
-        console.warn('Access denied - Role ID:', user?.role_id);
         setError('Access denied. Admin privileges required.');
         setLoading(false);
         return;
       }
 
-      // Then attempt authentication
       const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (authError) {
-        console.error('Auth error:', authError);
-        setError(authError.message);
+        if (authError.message.includes('Invalid login credentials')) {
+          setError('Incorrect password. Please try again.');
+        } else {
+          setError(authError.message);
+        }
+        setLoading(false);
         return;
       }
       
@@ -52,29 +61,26 @@ const Login: React.FC = () => {
 
     } catch (err) {
       console.error('Unexpected error:', err);
-      setError('An unexpected error occurred.');
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative h-screen">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: 'url(Login-bg-modern-jeep.jpg)', filter: 'blur(4px)' }}
-      ></div>
+    <div className="flex h-screen">
+    <div 
+      className="flex-1 bg-teal-500 flex flex-col justify-center items-center bg-cover bg-center" 
+      style={{ backgroundImage: "url('/Login_bg.jpg')" }}
+    >
 
-      {/* Login Form Container */}
-      <div className="flex justify-center items-center h-full relative z-10">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-sm w-full">
+    </div>
+      <div className="flex justify-center items-center flex-1 bg-gray-100">
+        <div className="max-w-sm w-full">
           <h2 className="text-center text-2xl font-semibold mb-4">Admin</h2>
 
-          {/* Error Message */}
           {error && <div className="text-red-500 text-center mb-4">{error}</div>}
 
-          {/* Login Form */}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label htmlFor="email" className="block text-gray-700">Email</label>
@@ -88,21 +94,30 @@ const Login: React.FC = () => {
               />
             </div>
 
-            <div className="mb-6">
+            <div className="mb-6 relative">
               <label htmlFor="password" className="block text-gray-700">Password</label>
-              <input
-                type="password"
-                id="password"
-                className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center mt-1 text-gray-600 hover:text-gray-800"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+                </button>
+              </div>
             </div>
 
             <button
               type="submit"
-              className="w-full p-3 bg-sky-400 text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 bg-teal-500 text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary"
               disabled={loading}
             >
               {loading ? 'Logging in...' : 'Login'}

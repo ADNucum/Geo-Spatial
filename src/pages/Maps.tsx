@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import Heatmap from '@/pages/Heatmap';
 import PickUpDropOff from '@/pages/PickUpDropOff';
+import { FaMap, FaFire, FaMapMarkerAlt } from 'react-icons/fa';
 
 interface Location {
   type: string;
@@ -42,7 +43,7 @@ const Maps: React.FC = () => {
           JSON.stringify(prevLocations) === JSON.stringify(newLocations);
         return isEqual ? prevLocations : newLocations;
       });
-    }, 300), // Debounce delay to avoid too many updates
+    }, 300),
     []
   );
 
@@ -75,14 +76,11 @@ const Maps: React.FC = () => {
   };
 
   useEffect(() => {
-    // Fetch locations initially
     fetchLocations();
 
-    // Set up interval to fetch locations every 1 second
-    const intervalId = setInterval(fetchLocations, 1000); // 1000ms = 1 second
+    const intervalId = setInterval(fetchLocations, 1000);
 
     return () => {
-      // Clean up the interval when the component is unmounted
       clearInterval(intervalId);
     };
   }, [updateLocations]);
@@ -114,22 +112,36 @@ const Maps: React.FC = () => {
       </div>
 
       <SidebarInset>
-        {/* Map View Selector */}
-        <div className="absolute top-4 left-[10%] transform -translate-x-1/2 z-20">
-          <Select
-            value={mapView}
-            onValueChange={(value: MapView) => setMapView(value)}
-          >
-            <SelectTrigger className="w-[100%] h-[30px] text-stone-900 border-sky-900 bg-gray-300">
-              <SelectValue placeholder="Select map view" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="standard">Standard Map</SelectItem>
-              <SelectItem value="heatmap">Heat Map</SelectItem>
-              <SelectItem value="pickupdropoff">Pick Up & Drop Off</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
+      <Select
+        value={mapView}
+        onValueChange={(value: MapView) => setMapView(value)}
+      >
+        <SelectTrigger className="w-[200px] h-[40px] p-6 text-stone-900 border border-gray-200 rounded-xl shadow-md hover:bg-teal-100 focus:ring-2 focus:ring-teal-300 transition duration-200">
+          <SelectValue placeholder="Select map view" />
+        </SelectTrigger>
+        <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg">
+          <SelectItem value="standard">
+            <div className="flex items-center py-2 px-3 hover:bg-gray-100 rounded-lg">
+              <FaMap className="mr-2 text-teal-600 text-lg" />
+              <span className="text-gray-800 font-medium">Standard Map</span>
+            </div>
+          </SelectItem>
+          <SelectItem value="heatmap">
+            <div className="flex items-center py-2 px-3 hover:bg-gray-100 rounded-lg">
+              <FaFire className="mr-2 text-red-600 text-lg" />
+              <span className="text-gray-800 font-medium">Heat Map</span>
+            </div>
+          </SelectItem>
+          <SelectItem value="pickupdropoff">
+            <div className="flex items-center py-2 px-3 hover:bg-gray-100 rounded-lg">
+              <FaMapMarkerAlt className="mr-2 text-blue-600 text-lg" />
+              <span className="text-gray-800 font-medium text-xs">Pick Up & Drop Off</span>
+            </div>
+          </SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
 
         {renderMap()}
       </SidebarInset>

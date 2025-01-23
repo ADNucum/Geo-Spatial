@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '@/supabaseClient'; // Import your Supabase client
-import PickUpDropOffMaps from '@/components/PickUpDropOffMaps'; // Import the map component
-import MiniSidebar from '@/components/Mini-Sidebar'; // Import MiniSidebar
+import { supabase } from '@/supabaseClient'; 
+import PickUpDropOffMaps from '@/components/PickUpDropOffMaps'; 
+import MiniSidebar from '@/components/Mini-Sidebar'; 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import DataAnalytics from './DataAnalytics'; // Import DataAnalytics component
+import DataAnalytics from './DataAnalytics'; 
 
 const PickUpDropOff: React.FC = () => {
   const [geoJsonData, setGeoJsonData] = useState<any>(null);
@@ -14,7 +14,7 @@ const PickUpDropOff: React.FC = () => {
       if (error) {
         console.error('Error fetching GeoJSON data:', error);
       } else {
-        console.log('Fetched GeoJSON Data:', data);  // Log the fetched data to inspect its structure
+        console.log('Fetched GeoJSON Data:', data);  
         setGeoJsonData(data);
       }
     };
@@ -24,13 +24,11 @@ const PickUpDropOff: React.FC = () => {
 
   return (
     <SidebarProvider>
-      {/* Sidebar Floating Above the Map */}
       <div className="absolute top-0 left-0 z-10">
         <MiniSidebar />
       </div>
 
       <SidebarInset>
-        {/* Map takes up full width and height */}
         <div className="h-screen w-full absolute top-0 left-0">
           {geoJsonData ? (
             <PickUpDropOffMaps geoJsonData={geoJsonData} />
@@ -39,24 +37,11 @@ const PickUpDropOff: React.FC = () => {
           )}
         </div>
 
-        {/* DataAnalytics Floating Above the Map */}
         <div className="absolute top-30 right-1 z-20 w-full sm:w-96">
           <DataAnalytics />
         </div>
 
-        {/* Card on the Bottom Left */}
-        <div className="h-10 border border-gray-500 absolute top-5 right-9 mr-[21%] z-30 text-stone-800 bg-gray-200 px-2 pt-1 shadow-lg rounded-md">
-          <div className="flex space-x-6">
-            <div className="flex items-center">
-              <p className="mr-2">Pick-Up Spots</p>
-              <div className="w-4 h-4 bg-blue-400 rounded-full"></div>
-            </div>
-            <div className="flex items-center">
-              <p className="mr-2">Drop Off Spots</p>
-              <div className="w-4 h-4 bg-green-400 rounded-full"></div>
-            </div>
-          </div>
-        </div>
+
 
       </SidebarInset>
     </SidebarProvider>

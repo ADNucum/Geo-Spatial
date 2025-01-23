@@ -1,21 +1,17 @@
-//Updated
-
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { supabase } from "@/supabaseClient";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartOptions } from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartOptions, ChartData } from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface TotalTripsData {
-  week: string; // Week identifier (e.g., "2025-W01")
-  total_trips: number; // Total trips in the week
+  week: string;
+  total_trips: number;
 }
-
 
 const TotalTripsBarChart: React.FC = () => {
   const [totalTripsData, setTotalTripsData] = useState<TotalTripsData[]>([]);
-  const [chartGradient, setChartGradient] = useState<CanvasGradient | null>(null);
 
   useEffect(() => {
     const fetchTotalTrips = async () => {
@@ -29,12 +25,11 @@ const TotalTripsBarChart: React.FC = () => {
         return;
       }
 
-      // Always group by week
       const tripsByWeek = data.reduce((acc: Record<string, number>, trip: { start_timestamp: string }) => {
         const date = new Date(trip.start_timestamp);
         const weekStart = new Date(date);
         weekStart.setDate(date.getDate() - date.getDay());
-        const weekKey = `Week ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        const weekKey = `Week ${weekStart.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
 
         acc[weekKey] = (acc[weekKey] || 0) + 1;
         return acc;
@@ -51,39 +46,48 @@ const TotalTripsBarChart: React.FC = () => {
     fetchTotalTrips();
   }, []);
 
-  // Prepare the gradient color for the bars
-  useEffect(() => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+  const createPattern = (ctx: CanvasRenderingContext2D, color: string): CanvasPattern | undefined => {
+    const patternCanvas = document.createElement("canvas");
+    patternCanvas.width = 10;
+    patternCanvas.height = 10;
+    const patternCtx = patternCanvas.getContext("2d");
 
-    if (ctx) {
-      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-      gradient.addColorStop(0, "rgba(76, 131, 232, 1)"); // Start: Light blue
-      gradient.addColorStop(1, "rgba(55, 102, 204, 1)"); // End: Darker blue
-      setChartGradient(gradient);
+    if (patternCtx) {
+      patternCtx.fillStyle = color;
+      patternCtx.fillRect(0, 0, 10, 10);
+      patternCtx.strokeStyle = "white";
+      patternCtx.lineWidth = 2;
+      patternCtx.moveTo(0, 0);
+      patternCtx.lineTo(10, 10);
+      patternCtx.stroke();
+      return ctx.createPattern(patternCanvas, "repeat")!;
     }
-  }, []);
+    return undefined;
+  };
 
-  // Prepare data for the bar chart
-  const barChartData = {
+  const barChartData: ChartData<"bar", number[], string> = {
     labels: totalTripsData.map((trip) => trip.week),
     datasets: [
       {
         label: "Total Trips",
         data: totalTripsData.map((trip) => trip.total_trips),
-        backgroundColor: chartGradient || "rgba(76, 131, 232, 1)", // Apply the gradient if available, otherwise fallback to a solid color
-        borderColor: "#3b6bcc", // Slightly darker border
+        backgroundColor: (context: any) => {
+          const chartCtx = context.chart.ctx;
+          const pattern = createPattern(chartCtx, "#22b5b0");
+          return pattern || "#42f5bf"; 
+        },
+        borderColor: "#3b6bcc",
         borderWidth: 1,
       },
     ],
   };
 
-  const options: ChartOptions<'bar'> = {
+  const options: ChartOptions<"bar"> = {
     responsive: true,
     plugins: {
       legend: {
         display: true,
-        position: 'top',
+        position: "top",
         labels: {
           color: "rgb(48, 47, 44)",
         },
@@ -94,20 +98,20 @@ const TotalTripsBarChart: React.FC = () => {
         title: {
           display: true,
           text: "Weeks (Start Date)",
-          color: "rgb(48, 47, 44)", // Color of the x-axis title
+          color: "rgb(48, 47, 44)",
         },
         ticks: {
-          color: "rgb(48, 47, 44)", // Color of the x-axis ticks
+          color: "rgb(48, 47, 44)",
         },
       },
       y: {
         title: {
           display: true,
           text: "Number of Trips",
-          color: "rgb(48, 47, 44)", // Color of the y-axis title
+          color: "rgb(48, 47, 44)",
         },
         ticks: {
-          color: "rgb(48, 47, 44)", // Color of the y-axis ticks
+          color: "rgb(48, 47, 44)",
         },
         beginAtZero: true,
       },
@@ -115,8 +119,10 @@ const TotalTripsBarChart: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-200 shadow-md rounded-lg p-1 border border-gray-500">
-      <h3 className="text-center text-lg font-semibold mb-4 text-stone-700">Total Trips Per Week</h3>
+    <div className="bg-gray-100 shadow-md rounded-lg p-2 border border-teal-500">
+      <h3 className="text-center text-lg font-semibold mb-4 text-stone-700">
+        Total Trips Per Week
+      </h3>
       <Bar data={barChartData} options={options} />
     </div>
   );

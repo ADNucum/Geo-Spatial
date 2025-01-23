@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from '@/components/ui/button'; // Assuming Button component from Shadcn UI
-import { Link } from 'react-router-dom'; // If you're using react-router for navigation
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 type BreadcrumbItem = {
   label: string;

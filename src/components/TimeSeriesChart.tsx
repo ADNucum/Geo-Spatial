@@ -10,10 +10,10 @@ import {
   Tooltip,
   Legend,
   TimeScale,
+  Filler, 
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 
-// Register necessary components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -22,7 +22,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  TimeScale
+  TimeScale,
+  Filler // Register the Filler plugin
 );
 
 interface TimeSeriesChartProps {
@@ -36,17 +37,15 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   timeUnit,
   onTimeUnitChange,
 }) => {
-  // Preprocess timestamps to ISO 8601 format
   const preprocessData = (data: { timestamp: string; passengers: number }[]) =>
     data.map((point) => ({
       ...point,
-      timestamp: new Date(point.timestamp).toISOString(), // Convert to ISO 8601
+      timestamp: new Date(point.timestamp).toISOString(),
     }));
 
-  // Filter data to include timestamps only from 7 AM to 7 PM
   const filteredData = preprocessData(data).filter((point) => {
     const hour = new Date(point.timestamp).getHours();
-    return hour >= 7 && hour <= 19; // Only include data from 7 AM to 7 PM
+    return hour >= 7 && hour <= 19;
   });
 
   const chartData = {
@@ -54,9 +53,10 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
     datasets: [
       {
         data: filteredData.map((point) => point.passengers),
-        borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        tension: 0.3,
+        borderColor: "rgba(75, 192, 192, 1)", 
+        backgroundColor: "rgba(75, 192, 192, 0.4)", 
+        fill: "origin", 
+        tension: 0.3, 
       },
     ],
   };
@@ -73,7 +73,7 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
     },
     scales: {
       x: {
-        type: "time" as const,
+        type: "time" as const, 
         time: {
           unit: timeUnit,
           displayFormats: {
@@ -107,11 +107,10 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   };
 
   return (
-    <div className="p-4 border border-gray-500 rounded-lg shadow-lg bg-gray-200">
+    <div className="p-4 border border-teal-500 rounded-lg shadow-lg bg-gray-100">
       <h2 className="text-center text-md font-semibold text-gray-800 mb-4">
         Passenger Volume Trends
       </h2>
-      {/* Time Unit Selector */}
       <div className="flex justify-center mb-6">
         <label htmlFor="timeUnit" className="text-stone-600 font-medium mr-2">
           Select Time Unit

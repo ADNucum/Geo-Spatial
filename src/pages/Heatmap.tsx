@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import MiniSidebar from '@/components/Mini-Sidebar'; // Import your Mini-Sidebar
+import MiniSidebar from '@/components/Mini-Sidebar'; 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import HeatmapLayerComponent from '@/components/HeatmapLayerComponent'; // Import your HeatmapLayerComponent
+import HeatmapLayerComponent from '@/components/HeatmapLayerComponent'; 
 import { supabase } from '@/supabaseClient';
-import DataAnalytics from './DataAnalytics'; // Import DataAnalytics component
+import DataAnalytics from './DataAnalytics'; 
 import './Maps.css';
 
 const Heatmap: React.FC = () => {
@@ -17,10 +17,10 @@ const Heatmap: React.FC = () => {
         return;
       }
 
-      // Format GeoJSON data for the heatmap
+      // Formattig GeoJSON data for the heatmaps
       const features = data.map((item: any) => ({
         type: 'Feature',
-        geometry: item.start_location, // Assuming start_location is the focus
+        geometry: item.start_location, 
         properties: { end_location: item.end_location },
       }));
       setGeoJsonData({ type: 'FeatureCollection', features });
@@ -31,13 +31,11 @@ const Heatmap: React.FC = () => {
 
   return (
     <SidebarProvider>
-      {/* Sidebar Floating Above the Map */}
       <div className="absolute top-0 left-0 z-10">
         <MiniSidebar />
       </div>
 
       <SidebarInset>
-        {/* Map takes up full width and height */}
         <div className="h-screen w-full absolute top-0 left-0">
           {geoJsonData ? (
             <HeatmapLayerComponent geoJsonData={geoJsonData} />
@@ -46,7 +44,6 @@ const Heatmap: React.FC = () => {
           )}
         </div>
 
-        {/* DataAnalytics Floating Above the Map */}
         <div className="absolute top-30 right-1 z-20 w-full sm:w-96">
           <DataAnalytics />
         </div>

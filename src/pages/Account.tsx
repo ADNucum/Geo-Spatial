@@ -3,7 +3,7 @@ import { supabase } from '@/supabaseClient';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import Breadcrumbs from '@/components/BreadCrumbs'; // Custom Breadcrumbs component
+import Breadcrumbs from '@/components/BreadCrumbs';
 
 type User = {
   auth_user_id: any;
@@ -180,8 +180,8 @@ const Account: React.FC = () => {
           name,
           username,
           email,
-          password, // Password should be hashed in production!
-          role_id: 2, // Assuming 2 is the "Operator" role
+          password, 
+          role_id: 2, 
         },
       ]);
 
@@ -203,18 +203,18 @@ const Account: React.FC = () => {
 
   return (
     <div className="flex min-h-screen">
-      <div className="w-64 bg-gray-300 p-4 rounded-lg shadow-lg">
-        <h3 className="text-xl font-bold pl-3 pb-6">Account Settings</h3>
-        <Button variant="link" onClick={() => setActiveMenu('editAccount')} className="w-full ml-2 mt-2">
+      <div className="w-64 bg-teal-500 p-4 pt-10 rounded-lg shadow-lg">
+        <h3 className="text-2xl text-stone-100 font-bold pl-3 pb-6">Account Settings</h3>
+        <Button variant="link" onClick={() => setActiveMenu('editAccount')} className=" text-stone-100 text-md w-full ml-2 mt-2">
           Edit Account Details
         </Button>
-        <Button variant="link" onClick={() => setActiveMenu('changePassword')} className="w-full mt-2">
+        <Button variant="link" onClick={() => setActiveMenu('changePassword')} className="text-stone-100 text-md w-full mt-2">
           Change Password
         </Button>
-        <Button variant="link" onClick={() => setActiveMenu('addOperator')} className="w-full mt-2">
+        <Button variant="link" onClick={() => setActiveMenu('addOperator')} className="text-stone-100 text-md w-full mt-2">
           Add Operator
         </Button>
-        <Button onClick={handleLogout} className="w-[80%] text-center mt-[90%] ml-5 bg-blue-500">
+        <Button onClick={handleLogout} className="w-[80%] text-center mt-[90%] ml-5 border border-stone-100 bg-teal-500">
           Logout
         </Button>
       </div>

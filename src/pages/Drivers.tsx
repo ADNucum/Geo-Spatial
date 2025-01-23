@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Separator } from "@/components/ui/separator"; 
 import { Table, TableHeader, TableRow, TableCell } from "@/components/ui/table"; 
 import { supabase } from "../supabaseClient"; 
 import { Button } from "@/components/ui/button"; 
 import AddJeepModal from "@/components/AddJeepModal";
-import "./Driver.css";
+import { FaEdit, FaTrash } from "react-icons/fa"
 
 interface Driver {
   mjeep_code: string;
@@ -132,7 +131,7 @@ const Drivers: React.FC = () => {
     const { data: assignedDrivers, error: assignedError } = await supabase
       .from("modern_jeeps")
       .select("driver_id")
-      .neq('driver_id', driver.driver_id); // Exclude current driver
+      .neq('driver_id', driver.driver_id); 
 
     if (assignedError) {
       console.error("Error fetching assigned drivers:", assignedError);
@@ -189,10 +188,6 @@ const Drivers: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4">
-      <header className="flex h-16 justify-center items-center mt-10">
-        <Separator orientation="vertical" className="h-4 ml-2" />
-        <h1 className="text-3xl font-bold ml-4">Modern Jeep Management</h1>
-      </header>
 
       <div className="flex justify-end p-4">
         <Button
@@ -203,55 +198,88 @@ const Drivers: React.FC = () => {
         </Button>
       </div>
 
-      <div className="border rounded-md border-slate-600">
-        <Table className="w-full border-collapse shadow-lg rounded-lg overflow-hidden border border-slate-600">
-          <TableHeader className="bg-gray-800 text-white">
-            <TableRow>
-              <TableCell className="font-semibold border hover:bg-gray-800 px-4 py-2">Type</TableCell>
-              <TableCell className="font-semibold border hover:bg-gray-800 px-4 py-2">Plate Number</TableCell>
-              <TableCell className="font-semibold border hover:bg-gray-800 px-4 py-2">Seats</TableCell>
-              <TableCell className="font-semibold border hover:bg-gray-800 px-4 py-2">Status</TableCell>
-              <TableCell className="font-semibold border hover:bg-gray-800 px-4 py-2">Driver</TableCell>
-              <TableCell className="font-semibold border hover:bg-gray-800 px-4 py-2">Action</TableCell>
-            </TableRow>
-          </TableHeader>
-          <tbody>
-            {drivers.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="text-center p-4">No drivers available</td>
-              </tr>
-            ) : (
-              drivers.map((driver, index) => (
-                <TableRow key={index}>
-                  <TableCell className="border border-slate-600 p-1 px-2 bg-slate-200">{driver.mjeep_code}</TableCell>
-                  <TableCell className="border border-slate-600 p-1 px-2 bg-slate-200">{driver.plate_number}</TableCell>
-                  <TableCell className="border border-slate-600 p-1 px-2 bg-slate-200">{driver.seats}</TableCell>
-                  <TableCell className="border border-slate-600 p-1 px-2 bg-slate-200">{driver.status ? "Active" : "Inactive"}</TableCell>
-                  <TableCell className="border border-slate-600 p-1 px-2 bg-slate-200">{driver.driver_name}</TableCell>
-                  <TableCell className="border border-slate-600 p-1 px-2 bg-slate-200">
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => handleEdit(driver)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleDelete(driver.mjeep_code)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </tbody>
-        </Table>
-      </div>
+      <div className="border rounded-md shadow-lg overflow-hidden">
+  <Table className="w-full border-collapse">
+    <TableHeader className="bg-teal-800 text-white">
+      <TableRow>
+        <TableCell className="font-semibold border border-teal-900 px-4 py-3 text-center">
+          Type
+        </TableCell>
+        <TableCell className="font-semibold border border-teal-900 px-4 py-3 text-center">
+          Plate Number
+        </TableCell>
+        <TableCell className="font-semibold border border-teal-900 px-4 py-3 text-center">
+          Seats
+        </TableCell>
+        <TableCell className="font-semibold border border-teal-900 px-4 py-3 text-center">
+          Status
+        </TableCell>
+        <TableCell className="font-semibold border border-teal-900 px-4 py-3 text-center">
+          Driver
+        </TableCell>
+        <TableCell className="font-semibold border border-teal-900 px-4 py-3 text-center">
+          Action
+        </TableCell>
+      </TableRow>
+    </TableHeader>
+    <tbody>
+      {drivers.length === 0 ? (
+        <tr>
+          <td colSpan={6} className="text-center p-6 text-gray-600 italic">
+            No drivers available
+          </td>
+        </tr>
+      ) : (
+        drivers.map((driver, index) => (
+          <TableRow
+            key={index}
+            className="hover:bg-gray-100 transition duration-200"
+          >
+            <TableCell className="border border-gray-300 px-4 py-3 text-center">
+              {driver.mjeep_code}
+            </TableCell>
+            <TableCell className="border border-gray-300 px-4 py-3 text-center">
+              {driver.plate_number}
+            </TableCell>
+            <TableCell className="border border-gray-300 px-4 py-3 text-center">
+              {driver.seats}
+            </TableCell>
+            <TableCell className="border border-gray-300 px-4 py-3 text-center">
+              <span
+                className={`px-2 py-1 rounded-full text-xs ${
+                  driver.status
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                }`}
+              >
+                {driver.status ? "Active" : "Inactive"}
+              </span>
+            </TableCell>
+            <TableCell className="border border-gray-300 px-4 py-3 text-center">
+              {driver.driver_name}
+            </TableCell>
+            <TableCell className="border border-gray-300 px-4 py-3 text-center">
+              <div className="flex justify-center space-x-2">
+                <button
+                  onClick={() => handleEdit(driver)}
+                  className="flex items-center px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-800 transition"
+                >
+                  <FaEdit className="mr-1" /> Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(driver.mjeep_code)}
+                  className="flex items-center px-3 py-1 rounded bg-red-600 text-white hover:bg-red-800 transition"
+                >
+                  <FaTrash className="mr-1" /> Delete
+                </button>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))
+      )}
+    </tbody>
+  </Table>
+</div>
 
       <AddJeepModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={handleAddJeep} />
 
